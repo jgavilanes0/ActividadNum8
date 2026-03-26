@@ -1,0 +1,78 @@
+﻿@page "/diasdelmes"
+@rendermode InteractiveServer
+
+<PageTitle>Días del mes</PageTitle>
+
+<div class="container mt-4" style="max-width: 800px; margin-left: 0;">
+    <h3 class="mb-4">Conocer los días del mes</h3>
+
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-2">
+            <label class="col-form-label">Mes</label>
+        </div>
+        <div class="col-md-10">
+            <input type="number" class="form-control" @bind="mes" min="1" max="12" />
+        </div>
+    </div>
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-2">
+            <label class="col-form-label">Año</label>
+        </div>
+        <div class="col-md-10">
+            <input type="number" class="form-control" @bind="anio" min="1" />
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <button class="btn btn-primary" @onclick="CalcularDias">Calcular</button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(resultado))
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h4 class="fw-normal">@resultado</h4>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private int mes = 0;
+    private int anio = 0;
+    private string resultado = "";
+
+    private void CalcularDias()
+    {
+        if (mes < 1 || mes > 12 || anio <= 0)
+        {
+            resultado = "Por favor, ingresa un mes (1-12) y un año válidos.";
+            return;
+        }
+        int dias = 0;
+        if (mes == 2)
+        {
+            bool esBisiesto = (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+            if (esBisiesto)
+            {
+                dias = 29;
+            }
+            else
+            {
+                dias = 28;
+            }
+        }
+        else if (mes == 4 || mes == 6 || mes == 9 || mes == 11)
+        {
+            dias = 30;
+        }
+        else
+        {
+            dias = 31;
+        }
+        resultado = $"El mes {mes} del año {anio} tiene {dias} días";
+    }
+}
