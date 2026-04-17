@@ -1,0 +1,70 @@
+﻿@page "/listaactividades"
+@rendermode InteractiveServer
+
+<PageTitle>Lista de Actividades</PageTitle>
+
+<div class="container mt-4" style="max-width: 600px; margin-left: 0;">
+    <h3 class="mb-4">Administrador de Actividades</h3>
+
+    <div class="input-group mb-4">
+        <input type="text" class="form-control" placeholder="Nueva actividad..."
+               @bind="nuevaActividad" @onkeyup="RevisarTecla" />
+        <button class="btn btn-primary" @onclick="AgregarActividad">
+            <i class="bi bi-plus-lg"></i> Agregar
+        </button>
+    </div>
+
+    <hr />
+
+    <div class="list-group">
+        @if (actividades.Count == 0)
+        {
+            <div class="alert alert-light border shadow-sm">
+                No hay actividades pendientes. ¡Buen trabajo!
+            </div>
+        }
+        else
+        {
+            @foreach (var actividad in actividades)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center shadow-sm mb-2 border rounded">
+                    <span>@actividad</span>
+                    <button class="btn btn-outline-danger btn-sm" @onclick="() => EliminarActividad(actividad)">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </div>
+            }
+        }
+    </div>
+
+    @if (actividades.Count > 0)
+    {
+        <div class="mt-3 text-muted">
+            Total de actividades: @actividades.Count
+        </div>
+    }
+</div>
+
+@code {
+    private List<string> actividades = new List<string>();
+    private string nuevaActividad = "";
+    private void AgregarActividad()
+    {
+        if (!string.IsNullOrWhiteSpace(nuevaActividad))
+        {
+            actividades.Add(nuevaActividad);
+            nuevaActividad = "";
+        }
+    }
+    private void EliminarActividad(string actividadAEliminar)
+    {
+        actividades.Remove(actividadAEliminar);
+    }
+    private void RevisarTecla(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            AgregarActividad();
+        }
+    }
+}
