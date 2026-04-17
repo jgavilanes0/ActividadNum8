@@ -1,0 +1,153 @@
+﻿@page "/canciones"
+@rendermode InteractiveServer
+
+<PageTitle>Mis Canciones</PageTitle>
+
+<div class="container mt-4" style="max-width: 800px; margin-left: 0;">
+    <h3 class="mb-4">Administrador de Canciones</h3>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <input type="text" class="form-control" placeholder="Escribe un título..." @bind="nuevoTitulo" />
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-primary w-100" @onclick="AgregarTitulo">Agregar Canción</button>
+        </div>
+    </div>
+
+    <div class="row mb-4 align-items-center bg-light p-3 rounded shadow-sm border">
+        <div class="col-md-6">
+            <input type="text" class="form-control border-secondary" placeholder="Filtro (ej. summer)..." @bind="filtro" />
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-dark me-2" @onclick="Filtrar">Buscar</button>
+            <button class="btn btn-outline-dark me-2" @onclick="OrdenarAZ">A-Z</button>
+            <button class="btn btn-outline-dark" @onclick="OrdenarZA">Z-A</button>
+        </div>
+    </div>
+
+    <ul class="list-group shadow-sm">
+        @if (cancionesMostradas.Count == 0)
+        {
+            <li class="list-group-item text-muted text-center py-4">No se encontraron canciones.</li>
+        }
+        else
+        {
+            @foreach (var titulo in cancionesMostradas)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @if (tituloEnEdicion == titulo)
+                    {
+                        <input type="text" class="form-control me-2 border-warning" @bind="textoEditado" />
+                        <div class="btn-group">
+                            <button class="btn btn-success btn-sm" @onclick="() => GuardarEdicion(titulo)">Guardar</button>
+                            <button class="btn btn-secondary btn-sm" @onclick="CancelarEdicion">Cancelar</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="fw-medium">@titulo</span>
+                        <div class="btn-group">
+                            <button class="btn btn-warning btn-sm" @onclick="() => IniciarEdicion(titulo)">Editar</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => EliminarTitulo(titulo)">Eliminar</button>
+                        </div>
+                    }
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+@code {
+    private List<string> titulos = new List<string> { "Die For You", "God Is A Weapon", "Nobody" };
+    private List<string> cancionesMostradas = new List<string> { "Die For You", "God Is A Weapon", "Nobody" };
+
+    private string nuevoTitulo = "";
+    private string filtro = "";
+    private string tituloEnEdicion = "";
+    private string textoEditado = "";
+
+    private void AgregarTitulo()
+    {
+        if (nuevoTitulo != "")
+        {
+            titulos.Add(nuevoTitulo);
+            nuevoTitulo = "";
+            ActualizarLista();
+        }
+    }
+
+    private void EliminarTitulo(string titulo)
+    {
+        titulos.Remove(titulo);
+        ActualizarLista();
+    }
+
+    private void IniciarEdicion(string titulo)
+    {
+        tituloEnEdicion = titulo;
+        textoEditado = titulo;
+    }
+
+    private void GuardarEdicion(string tituloAntiguo)
+    {
+        if (textoEditado != "")
+        {
+            for (int i = 0; i < titulos.Count; i++)
+            {
+                if (titulos[i] == tituloAntiguo)
+                {
+                    titulos[i] = textoEditado;
+                }
+            }
+        }
+        CancelarEdicion();
+        ActualizarLista();
+    }
+
+    private void CancelarEdicion()
+    {
+        tituloEnEdicion = "";
+        textoEditado = "";
+    }
+
+    private void Filtrar()
+    {
+        cancionesMostradas.Clear();
+        
+        if (filtro == "")
+        {
+            ActualizarLista();
+        }
+        else
+        {
+            foreach (var cancion in titulos)
+            {
+                if (cancion.ToLower().Contains(filtro.ToLower()))
+                {
+                    cancionesMostradas.Add(cancion);
+                }
+            }
+        }
+    }
+
+    private void OrdenarAZ()
+    {
+        cancionesMostradas.Sort();
+    }
+
+    private void OrdenarZA()
+    {
+        cancionesMostradas.Sort();
+        cancionesMostradas.Reverse();
+    }
+
+    private void ActualizarLista()
+    {
+        cancionesMostradas.Clear();
+        foreach (var t in titulos)
+        {
+            cancionesMostradas.Add(t);
+        }
+    }
+}
